@@ -1,5 +1,131 @@
 
 # ------------------------------------------------------------
+# CLASE RESERVA
+# ------------------------------------------------------------
+
+class Reserva(Entidad):
+    """Gestiona las reservas realizadas por los clientes."""
+
+    def __init__(self, identificador, cliente, servicio, duracion):
+
+        super().__init__(identificador)
+
+        if not isinstance(cliente, Cliente):
+            raise DatosInvalidosError("Debe ingresar un cliente válido.")
+
+        if not isinstance(servicio, Servicio):
+            raise DatosInvalidosError("Debe seleccionar un servicio válido.")
+
+        servicio.validar_parametros(duracion)
+
+        self.__cliente = cliente
+        self.__servicio = servicio
+        self.__duracion = duracion
+        self.__estado = "Pendiente"
+        self.__fecha = datetime.now()
+
+        logging.info(
+            f"Reserva {identificador} creada correctamente."
+        )
+
+    @property
+    def estado(self):
+        return self.__estado
+
+    @property
+    def cliente(self):
+        return self.__cliente
+
+    @property
+    def servicio(self):
+        return self.__servicio
+
+    def confirmar(self):
+        """Confirma una reserva pendiente."""
+
+        if self.__estado != "Pendiente":
+            raise ReservaInvalidaError(
+                "Solo se pueden confirmar reservas pendientes."
+            )
+
+        self.__estado = "Confirmada"
+
+        logging.info(
+            f"Reserva {self.identificador} confirmada."
+        )
+
+        return "Reserva confirmada correctamente."
+
+    def cancelar(self):
+        """Cancela una reserva pendiente o confirmada."""
+
+        if self.__estado not in ["Pendiente", "Confirmada"]:
+            raise ReservaInvalidaError(
+                "La reserva no puede cancelarse."
+            )
+
+        self.__estado = "Cancelada"
+
+        logging.info(
+            f"Reserva {self.identificador} cancelada."
+        )
+
+        return "Reserva cancelada correctamente."
+
+    def procesar(self):
+        """Procesa la reserva y calcula el costo del servicio."""
+
+        try:
+            if self.__estado != "Confirmada":
+                raise ReservaInvalidaError(
+                    "La reserva debe estar confirmada para procesarse."
+                )
+
+            costo = self.__servicio.calcular_costo(
+                self.__duracion
+            )
+
+        except ReservaInvalidaError as error:
+            logging.error(
+                f"Error al procesar reserva: {error}"
+            )
+            raise
+
+        except Exception as error:
+            logging.exception(
+                "Error inesperado durante el procesamiento."
+            )
+            raise ErrorSistema(
+                "No fue posible procesar la reserva."
+            ) from error
+
+        else:
+            self.__estado = "Procesada"
+
+            logging.info(
+                f"Reserva {self.identificador} procesada. "
+                f"Costo: ${costo:.2f}"
+            )
+
+            return costo
+
+        finally:
+            logging.info(
+                f"Finalizó el intento de procesamiento "
+                f"de reserva {self.identificador}."
+            )
+
+    def mostrar_informacion(self):
+        return (
+            f"Reserva: {self.identificador}\n"
+            f"Cliente: {self.__cliente.nombre}\n"
+            f"Servicio: {self.__servicio.describir_servicio()}\n"
+            f"Duración: {self.__duracion}\n"
+            f"Estado: {self.__estado}\n"
+            f"Fecha: {self.__fecha}"
+        )
+
+# ------------------------------------------------------------
 # CLASE ABSTRACTA SERVICIO
 # ------------------------------------------------------------
 
