@@ -1,5 +1,170 @@
 
 # ------------------------------------------------------------
+# CLASE GESTOR DEL SISTEMA
+# ------------------------------------------------------------
+
+class GestorSistema:
+    """Administra clientes, servicios y reservas."""
+
+    def __init__(self):
+        self.clientes = []
+        self.servicios = []
+        self.reservas = []
+
+    def registrar_cliente(self, cliente):
+        if not isinstance(cliente, Cliente):
+            raise DatosInvalidosError("Cliente inválido.")
+
+        self.clientes.append(cliente)
+        logging.info("Cliente registrado correctamente.")
+
+    def registrar_servicio(self, servicio):
+        if not isinstance(servicio, Servicio):
+            raise DatosInvalidosError("Servicio inválido.")
+
+        self.servicios.append(servicio)
+        logging.info("Servicio registrado correctamente.")
+
+    def registrar_reserva(self, reserva):
+        if not isinstance(reserva, Reserva):
+            raise ReservaInvalidaError("Reserva inválida.")
+
+        self.reservas.append(reserva)
+        logging.info("Reserva registrada correctamente.")
+
+    def listar_clientes(self):
+        for cliente in self.clientes:
+            print(cliente.mostrar_informacion())
+
+    def listar_servicios(self):
+        for servicio in self.servicios:
+            print(servicio.describir_servicio())
+
+    def listar_reservas(self):
+        for reserva in self.reservas:
+            print(reserva.mostrar_informacion())
+
+
+# ------------------------------------------------------------
+# PRUEBAS DEL SISTEMA: 10 OPERACIONES
+# ------------------------------------------------------------
+
+def ejecutar_pruebas():
+    """Ejecuta operaciones válidas e inválidas del sistema."""
+
+    sistema = GestorSistema()
+
+    print("\n========== PRUEBAS SOFTWARE FJ ==========\n")
+
+    # OPERACIÓN 1: Registro válido de cliente
+    try:
+        cliente1 = Cliente(
+            "C001",
+            "Carlos Pérez",
+            "carlos@gmail.com",
+            "3001234567"
+        )
+        sistema.registrar_cliente(cliente1)
+        print("1. Cliente registrado correctamente.")
+
+    except Exception as error:
+        logging.exception("Operación 1 fallida.")
+        print("1. Error:", error)
+
+    # OPERACIÓN 2: Registro de cliente inválido
+    try:
+        Cliente("C002", "", "correoincorrecto", "ABC")
+    except DatosInvalidosError as error:
+        logging.error("Operación 2: %s", error)
+        print("2. Cliente inválido detectado:", error)
+
+    # OPERACIÓN 3: Creación de reserva de sala
+    try:
+        sala = ReservaSala("S001", "Sala principal", 50000)
+        sistema.registrar_servicio(sala)
+        print("3. Servicio de sala creado correctamente.")
+
+    except Exception as error:
+        logging.exception("Operación 3 fallida.")
+        print("3. Error:", error)
+
+    # OPERACIÓN 4: Creación de alquiler de equipos
+    try:
+        equipo = AlquilerEquipo("E001", "Proyector", 30000)
+        sistema.registrar_servicio(equipo)
+        print("4. Servicio de equipos creado correctamente.")
+
+    except Exception as error:
+        logging.exception("Operación 4 fallida.")
+        print("4. Error:", error)
+
+    # OPERACIÓN 5: Creación de asesoría especializada
+    try:
+        asesoria = AsesoriaEspecializada(
+            "A001", "Asesoría tecnológica", 80000
+        )
+        sistema.registrar_servicio(asesoria)
+        print("5. Asesoría creada correctamente.")
+
+    except Exception as error:
+        logging.exception("Operación 5 fallida.")
+        print("5. Error:", error)
+
+    # OPERACIÓN 6: Creación de servicio con precio inválido
+    try:
+        ReservaSala("S002", "Sala secundaria", -5000)
+    except DatosInvalidosError as error:
+        logging.error("Operación 6: %s", error)
+        print("6. Precio inválido detectado:", error)
+
+    # OPERACIÓN 7: Reserva exitosa
+    try:
+        reserva1 = Reserva("R001", cliente1, sala, 2)
+        sistema.registrar_reserva(reserva1)
+        print("7. Reserva creada correctamente.")
+
+    except Exception as error:
+        logging.exception("Operación 7 fallida.")
+        print("7. Error:", error)
+
+    # OPERACIÓN 8: Intento de reserva con duración inválida
+    try:
+        Reserva("R002", cliente1, equipo, -2)
+    except DatosInvalidosError as error:
+        logging.error("Operación 8: %s", error)
+        print("8. Duración inválida detectada:", error)
+
+    # OPERACIÓN 9: Confirmación y procesamiento de reserva
+    try:
+        reserva1.confirmar()
+        costo = reserva1.procesar()
+        print("9. Reserva procesada. Costo: $", costo)
+
+    except Exception as error:
+        logging.exception("Operación 9 fallida.")
+        print("9. Error:", error)
+
+    # OPERACIÓN 10: Intento de procesar reserva cancelada
+    try:
+        reserva2 = Reserva("R003", cliente1, asesoria, 1)
+        sistema.registrar_reserva(reserva2)
+        reserva2.cancelar()
+        reserva2.procesar()
+
+    except ReservaInvalidaError as error:
+        logging.error("Operación 10: %s", error)
+        print("10. Error controlado:", error)
+
+    finally:
+        logging.info("Finalizaron las 10 operaciones de prueba.")
+
+    print("\n========== RESUMEN DEL SISTEMA ==========")
+    print("Clientes registrados:", len(sistema.clientes))
+    print("Servicios registrados:", len(sistema.servicios))
+    print("Reservas registradas:", len(sistema.reservas))
+    print("\nPruebas finalizadas. Consulte software_fj.log.")
+
+# ------------------------------------------------------------
 # CLASE RESERVA
 # ------------------------------------------------------------
 
