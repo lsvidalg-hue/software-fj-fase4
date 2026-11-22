@@ -1,4 +1,47 @@
 
+# ------------------------------------------------------------
+# CLASE CLIENTE
+# ------------------------------------------------------------
+
+class Cliente(Entidad):
+    """Representa un cliente registrado en Software FJ."""
+
+    def __init__(self, identificador, nombre, correo, telefono):
+
+        super().__init__(identificador)
+
+        if not isinstance(nombre, str) or not nombre.strip():
+            raise DatosInvalidosError("El nombre del cliente es obligatorio.")
+
+        if not isinstance(correo, str) or "@" not in correo:
+            raise DatosInvalidosError("El correo electrónico no es válido.")
+
+        if not isinstance(telefono, str) or not telefono.isdigit():
+            raise DatosInvalidosError("El teléfono debe contener solo números.")
+
+        self.__nombre = nombre.strip()
+        self.__correo = correo.strip()
+        self.__telefono = telefono
+
+    @property
+    def nombre(self):
+        return self.__nombre
+
+    @property
+    def correo(self):
+        return self.__correo
+
+    @property
+    def telefono(self):
+        return self.__telefono
+
+    def mostrar_informacion(self):
+        return (
+            f"ID: {self.identificador} | "
+            f"Nombre: {self.__nombre} | "
+            f"Correo: {self.__correo} | "
+            f"Teléfono: {self.__telefono}"
+        )
 # ============================================================
 # PROYECTO: SOFTWARE FJ
 # Sistema Integral de Gestión de Clientes, Servicios y Reservas
