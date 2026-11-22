@@ -505,11 +505,24 @@ class Entidad(ABC):
 # INICIO DEL SISTEMA
 # ------------------------------------------------------------
 
+
 if __name__ == "__main__":
+
     print("======================================")
     print("       BIENVENIDO A SOFTWARE FJ")
     print(" Sistema de Gestión de Clientes y")
     print("       Servicios y Reservas")
     print("======================================")
 
-    logging.info("Sistema Software FJ iniciado correctamente.")
+    logging.info("Sistema Software FJ iniciado.")
+
+    try:
+        ejecutar_pruebas()
+
+    except Exception as error:
+        logging.exception("Error general del sistema: %s", error)
+        print("El sistema encontró un error:", error)
+
+    finally:
+        print("\nSistema Software FJ finalizado.")
+        logging.info("Sistema finalizado.")
