@@ -1,5 +1,102 @@
 
 # ------------------------------------------------------------
+# CLASE ABSTRACTA SERVICIO
+# ------------------------------------------------------------
+
+class Servicio(Entidad, ABC):
+    """Clase base para los servicios de Software FJ."""
+
+    def __init__(self, identificador, nombre, precio_base):
+        super().__init__(identificador)
+
+        if not isinstance(nombre, str) or not nombre.strip():
+            raise DatosInvalidosError("El nombre del servicio es obligatorio.")
+
+        if not isinstance(precio_base, (int, float)) or isinstance(precio_base, bool) or precio_base <= 0:
+            raise DatosInvalidosError("El precio debe ser mayor que cero.")
+
+        self._nombre = nombre
+        self._precio_base = precio_base
+
+    @abstractmethod
+    def calcular_costo(self, duracion, descuento=0, impuesto=0):
+        pass
+
+    @abstractmethod
+    def describir_servicio(self):
+        pass
+
+    @abstractmethod
+    def validar_parametros(self, duracion):
+        pass
+
+
+# ------------------------------------------------------------
+# SERVICIO 1: RESERVA DE SALAS
+# ------------------------------------------------------------
+
+class ReservaSala(Servicio):
+
+    def mostrar_informacion(self):
+        return self.describir_servicio()
+
+    def validar_parametros(self, duracion):
+        if not isinstance(duracion, (int, float)) or duracion <= 0:
+            raise DatosInvalidosError("La duración de la sala debe ser positiva.")
+
+    def calcular_costo(self, duracion, descuento=0, impuesto=0):
+        self.validar_parametros(duracion)
+        subtotal = self._precio_base * duracion
+        return subtotal * (1 - descuento / 100) * (1 + impuesto / 100)
+
+    def describir_servicio(self):
+        return f"Reserva de sala: {self._nombre}"
+
+
+# ------------------------------------------------------------
+# SERVICIO 2: ALQUILER DE EQUIPOS
+# ------------------------------------------------------------
+
+class AlquilerEquipo(Servicio):
+
+    def mostrar_informacion(self):
+        return self.describir_servicio()
+
+    def validar_parametros(self, duracion):
+        if not isinstance(duracion, (int, float)) or duracion <= 0:
+            raise DatosInvalidosError("La duración del alquiler debe ser positiva.")
+
+    def calcular_costo(self, duracion, descuento=0, impuesto=0):
+        self.validar_parametros(duracion)
+        subtotal = self._precio_base * duracion
+        return subtotal * (1 - descuento / 100) * (1 + impuesto / 100)
+
+    def describir_servicio(self):
+        return f"Alquiler de equipos: {self._nombre}"
+
+
+# ------------------------------------------------------------
+# SERVICIO 3: ASESORÍAS ESPECIALIZADAS
+# ------------------------------------------------------------
+
+class AsesoriaEspecializada(Servicio):
+
+    def mostrar_informacion(self):
+        return self.describir_servicio()
+
+    def validar_parametros(self, duracion):
+        if not isinstance(duracion, (int, float)) or duracion <= 0:
+            raise DatosInvalidosError("La duración de la asesoría debe ser positiva.")
+
+    def calcular_costo(self, duracion, descuento=0, impuesto=0):
+        self.validar_parametros(duracion)
+        subtotal = self._precio_base * duracion
+        return subtotal * (1 - descuento / 100) * (1 + impuesto / 100)
+
+    def describir_servicio(self):
+        return f"Asesoría especializada: {self._nombre}"
+
+# ------------------------------------------------------------
 # CLASE CLIENTE
 # ------------------------------------------------------------
 
